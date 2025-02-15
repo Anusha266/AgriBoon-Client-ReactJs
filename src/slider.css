@@ -1,0 +1,29 @@
+/* Style the custom arrows */
+.slick-prev, .slick-next {
+  width: 40px;
+  height: 40px;
+}
+
+.slick-prev:hover, .slick-next:hover {
+  background: #555; /* Slightly brighter arrow background on hover */
+  opacity: 1;
+}
+
+/* Style the dots */
+.slick-dots li button:before {
+  font-size: 12px;
+  color: #999; /* Dots color */
+}
+
+.slick-dots li.slick-active button:before {
+  color: #000; /* Active dot color */
+}
+
+/* Hover effect on images */
+.slide-container img:hover {
+  transform: scale(1.03);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  transition: transform 0.5s ease, box-shadow 0.5s ease;
+}
+
+
