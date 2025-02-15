@@ -23,7 +23,6 @@ import ProductCards from './ProductCards';
 import axios from "axios";
 
 
-
 const SearchNavbar = ({ isSignedIn, handleMenuOpen, menuAnchor, handleMenuClose, handleLogout, searchTerm, setSearchTerm }) => {
   const navigate = useNavigate();
   const [selectedProduct, setSelectedProduct] = useState("all");
@@ -40,6 +39,13 @@ const SearchNavbar = ({ isSignedIn, handleMenuOpen, menuAnchor, handleMenuClose,
   const handleSearch = () => {
     console.log("Searching for:", searchTerm, "in", selectedProduct);
     // API call to search products based on `searchTerm` and `selectedProduct`
+    if(['groundnut'].includes(searchTerm)){
+      fetchProductsByName(searchTerm);
+    }
+    else{
+      setProducts([])
+    }
+    
   };
 
   const fetchProductsByName = async(product) => {
@@ -58,6 +64,7 @@ const SearchNavbar = ({ isSignedIn, handleMenuOpen, menuAnchor, handleMenuClose,
       console.log("fethcing products by name",response.data)
       setProducts(response.data.data)    
     } catch (error) {
+      setProducts([])
       console.error('Error fetching data:', error);
     }
 
@@ -77,6 +84,7 @@ const SearchNavbar = ({ isSignedIn, handleMenuOpen, menuAnchor, handleMenuClose,
       console.log("response data while fetching all products",response.data)
       setProducts(response.data.data)    
     } catch (error) {
+      setProducts([])
       console.error('Error fetching data:', error);
     }
   };
@@ -166,7 +174,7 @@ const SearchNavbar = ({ isSignedIn, handleMenuOpen, menuAnchor, handleMenuClose,
 
     <SliderPage />
       {/* Render the product cards */}
-      {products.length > 0 && <ProductCards products={products} />}
+      <ProductCards products={products} />
     </>
     
   );
