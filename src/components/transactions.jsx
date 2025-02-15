@@ -162,18 +162,7 @@ const TransactionPage = () => {
     setStatus(event.target.value);
   };
 
-  const handleMenuOpen = (event) => {
-    setMenuAnchor(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setMenuAnchor(null);
-  };
-
-  const handleSignInSignOut = () => {
-    setIsSignedIn((prev) => !prev);
-  };
-
+  
   const handleAccept=async(id)=>{
     if(!id){
       console.log("No product id found to update status!")
@@ -235,6 +224,8 @@ const TransactionPage = () => {
   return (
     <>
       <TopNavbar/>
+      <Box sx={{ height: "40px" }} />
+      
       <Box
         sx={{
           display: 'flex',
@@ -243,6 +234,7 @@ const TransactionPage = () => {
           height: '98vh',
           width: '100%',
           overflow: 'hidden',
+
         }}
       >
         <Box
@@ -251,7 +243,7 @@ const TransactionPage = () => {
             height: '90%',
             padding: 2,
             border: '1px solid #ddd',
-            backgroundColor: 'pink',
+            backgroundColor: '#e6f7f5',
             borderRadius: '8px',
           }}
         >
@@ -315,7 +307,7 @@ const TransactionPage = () => {
             <Grid container spacing={3}>
               {Array.isArray(cardData) ? (cardData.map((card) => (
                 card?.product?
-                (<Grid item xs={12} sm={6} md={4} key={card._id}>
+                (<Grid item xs={12} sm={6} md={2} key={card._id}>
                   <Card
                     sx={{
                       position: 'relative',
