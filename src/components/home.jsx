@@ -35,7 +35,7 @@ const Homepage = () => {
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
       />
-      <ProductNavbar productCategories={productCategories} />
+      {/* <ProductNavbar productCategories={productCategories} /> */}
 
       
     </>
