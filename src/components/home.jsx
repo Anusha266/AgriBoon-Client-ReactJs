@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import SearchNavbar from "./searchNavbar";
-import ProductNavbar from "./productNavbar";
 import { Box, Typography } from "@mui/material";
 import SliderPage from "./Slider"; // Import Slider Component
 import { useNavigate } from "react-router-dom";
@@ -8,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 const Homepage = () => {
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const productCategories = ["ALL", "Groundnut", "Paddy", "Tomatoes", "Chillies"];
   const navigate=useNavigate();
 
   const handleMenuOpen = (event) => {
@@ -31,11 +29,10 @@ const Homepage = () => {
         handleMenuOpen={handleMenuOpen}
         menuAnchor={menuAnchor}
         handleMenuClose={handleMenuClose}
-        handleSignInSignOut={handleLogout}
+        handleLogout={handleLogout}
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
       />
-      {/* <ProductNavbar productCategories={productCategories} /> */}
 
       
     </>
