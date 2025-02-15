@@ -9,9 +9,7 @@ const ProductCards = ({ products }) => {
   const isProductsAvailable = products.length > 0; // Check if products exist
 
   const handleViewDetails = (productId) => {
-    navigate(`/product/get/${productId}`, {
-      state: { data: products }
-    });
+    navigate(`/product/get/${productId}`);
   };
 
   return (
@@ -25,7 +23,7 @@ const ProductCards = ({ products }) => {
         overflowY: "auto",
         padding: "20px",
         borderRadius: "10px",
-        backgroundColor: "#f9f9f9",
+        backgroundColor: "",
         minWidth: "1000px",
       }}
     >
@@ -84,7 +82,7 @@ const ProductCards = ({ products }) => {
                 size="small"
                 color="primary"
                 variant="contained"
-                onClick={() => handleViewDetails(product._id)}
+                onClick={() => handleViewDetails(product.id)}
                 sx={{
                   position: "absolute",
                   bottom: 10,

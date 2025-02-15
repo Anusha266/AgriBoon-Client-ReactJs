@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Grid, Card, CardMedia, CardContent, Typography, CircularProgress } from "@mui/material";
+import { Box, Grid, Card, CardMedia, CardContent, Typography, CircularProgress,CardActions,Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -9,20 +9,7 @@ const Cart = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const [isSignedIn, setIsSignedIn] = useState(false);
-  const [menuAnchor, setMenuAnchor] = useState(null);
-
-  const handleMenuOpen = (event) => {
-    setMenuAnchor(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setMenuAnchor(null);
-  };
-
-  const handleSignInSignOut = () => {
-    setIsSignedIn((prev) => !prev);
-  };
+  
 
 
   useEffect(() => {
@@ -77,35 +64,45 @@ const Cart = () => {
 
   return (
     <>
-       <TopNavbar
-        isSignedIn={isSignedIn}
-        handleMenuOpen={handleMenuOpen}
-        menuAnchor={menuAnchor}
-        handleMenuClose={handleMenuClose}
-        handleSignInSignOut={handleSignInSignOut}
-      />      
-      <Box sx={{ padding: 3 }}>
-        <Grid container spacing={2}>
-          {cartProducts.map(product => (
-            <Grid item xs={12} sm={6} md={4} key={product._id}>
-              <Card onClick={() => navigate(`/product/get/${product.id}`)} sx={{ cursor: "pointer" }}>
-                <CardMedia
-                  component="img"
-                  height="140"
-                  image={product?.image}
-                  alt={product?.name}
-                />
-                <CardContent>
-                  <Typography variant="h6">{product?.name}</Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    ₹{product?.min_price} - ₹{product?.max_price}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
-      </Box>    
+       <TopNavbar/>      
+    <Box sx={{ padding: 3 }}>
+      <Grid container spacing={2}>
+        {cartProducts.map((product) => (
+          <Grid item xs={12} sm={6} md={4} key={product._id}>
+            <Card sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
+              {/* Product Image */}
+              <CardMedia
+                component="img"
+                height="300"
+                image={product?.image}
+                alt={product?.name}
+              />
+
+              {/* Product Details */}
+              <CardContent sx={{ flexGrow: 1 }}>
+                <Typography variant="h6">{product?.name}</Typography>
+                <Typography variant="body2" color="textSecondary">
+                  ₹{Math.round(product?.min_price)} - ₹{Math.round(product?.max_price)}
+                </Typography>
+              </CardContent>
+
+              {/* View Button at the Bottom Right */}
+              <CardActions sx={{ justifyContent: "flex-end", padding: 2 }}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => navigate(`/product/get/${product.id}`)}
+                  sx={{ cursor: "pointer" }}
+                >
+                  View
+                </Button>
+              </CardActions>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+    </Box>
+   
     </>
   );
 };

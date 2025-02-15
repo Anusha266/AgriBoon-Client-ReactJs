@@ -21,9 +21,14 @@ import { useNavigate } from "react-router-dom";
 import SliderPage from './Slider'
 import ProductCards from './ProductCards';
 import axios from "axios";
+import { GlobalStateContext } from './GlobalState';
+import { useContext } from "react";
 
+const SearchNavbar = () => {
 
-const SearchNavbar = ({ isSignedIn, handleMenuOpen, menuAnchor, handleMenuClose, handleLogout, searchTerm, setSearchTerm }) => {
+  const { handleMenuOpen, handleMenuClose, handleLogout, menuAnchor } = useContext(GlobalStateContext);
+
+  const [searchTerm,setSearchTerm]=useState('')
   const navigate = useNavigate();
   const [selectedProduct, setSelectedProduct] = useState("all");
   const [products,setProducts]=useState([])
@@ -44,7 +49,7 @@ const SearchNavbar = ({ isSignedIn, handleMenuOpen, menuAnchor, handleMenuClose,
     }
     else{
       setProducts([])
-    }
+    } 
     
   };
 
@@ -101,7 +106,15 @@ const SearchNavbar = ({ isSignedIn, handleMenuOpen, menuAnchor, handleMenuClose,
 
   return (
     <>
-    <AppBar position="static" sx={{ display: "flex", justifyContent: "space-between", flexWrap: "nowrap", minWidth: "1000px", overflowX: "auto", backgroundColor: "black" }}>
+    <AppBar position="fixed" sx={{ 
+        display: "flex", 
+        justifyContent: "space-between", 
+        flexWrap: "nowrap", 
+        minWidth: "1000px", 
+        overflowX: "auto", 
+        backgroundColor: "black",
+        zIndex: 1100 // ✅ Ensure navbar appears above other content
+      }}>
       <Toolbar>
         {/* Menu Button */}
         <Box sx={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
@@ -112,7 +125,7 @@ const SearchNavbar = ({ isSignedIn, handleMenuOpen, menuAnchor, handleMenuClose,
             <Box sx={{ px: 2, py: 1, textAlign: "center" }}>
               <Avatar sx={{ margin: "0 auto", mb: 1 }} />
               <Typography variant="body1" gutterBottom>
-                Welcome, {isSignedIn ? "User" : "Guest"}
+                Welcome User,
               </Typography>
               <Divider />
               <MenuItem onClick={() => navigate("/")}>Home</MenuItem>
@@ -144,14 +157,14 @@ const SearchNavbar = ({ isSignedIn, handleMenuOpen, menuAnchor, handleMenuClose,
         </Select>
 
         {/* Search Input Field */}
-        <TextField
-          variant="outlined"
-          size="small"
-          placeholder="Search..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          sx={{ flexGrow: 1, backgroundColor: "white", borderRadius: 1, ml: 2 }}
-        />
+          <TextField
+            variant="outlined"
+            size="small"
+            placeholder="Search..."
+            value={searchTerm}
+            onClick={(e) => setSearchTerm(e.target.value)}
+            sx={{ flexGrow: 1, backgroundColor: "white", borderRadius: 1, ml: 2 }}
+          />
 
         {/* Search Button */}
         <Button variant="contained" color="primary" onClick={handleSearch} sx={{ ml: 1 }}>
@@ -170,6 +183,7 @@ const SearchNavbar = ({ isSignedIn, handleMenuOpen, menuAnchor, handleMenuClose,
       </Toolbar>
       
     </AppBar>
+    <Box sx={{ height: "50px" }} />
 
 
     <SliderPage />

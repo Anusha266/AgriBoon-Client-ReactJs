@@ -33,7 +33,7 @@ const ImageUploadBox = styled(Box)({
   height: '150px',
 });
 
-const productTypes = ["Groundnut", "Wheat", "Rice", "Maize"];
+const productTypes = ["Groundnut", "Wheat", "Paddy", "Maize"];
 const activeProductTypes = ["Groundnut"];
 const statesOfIndia = [
   "Andhra Pradesh",
@@ -54,25 +54,11 @@ const UploadProductPage = () => {
   const [selectedState, setSelectedState] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
   const [fetchedProductDetails, setFetchedProductDetails] = useState(null);
-  const [isSignedIn, setIsSignedIn] = useState(false);
-  const [menuAnchor, setMenuAnchor] = useState(null);
   const [popupMessage, setPopupMessage] = useState("");
   const [popupSeverity, setPopupSeverity] = useState("info");
   const [popupOpen, setPopupOpen] = useState(false);
 
   const navigate=useNavigate()
-
-  const handleMenuOpen = (event) => {
-    setMenuAnchor(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setMenuAnchor(null);
-  };
-
-  const handleSignInSignOut = () => {
-    setIsSignedIn((prev) => !prev);
-  };
 
   const handleProductChange = (event) => {
     setSelectedProduct(event.target.value);
@@ -144,6 +130,7 @@ const UploadProductPage = () => {
       setPopupMessage("Please fetch product details and select an image before uploading.");
       setPopupSeverity("error");
       setPopupOpen(true);
+      
       return;
     }
   
@@ -183,20 +170,14 @@ const UploadProductPage = () => {
 
   return (
     <>
-      <TopNavbar
-        isSignedIn={isSignedIn}
-        handleMenuOpen={handleMenuOpen}
-        menuAnchor={menuAnchor}
-        handleMenuClose={handleMenuClose}
-        handleSignInSignOut={handleSignInSignOut}
-      />
+        <TopNavbar/>
       <Box
         sx={{
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
           minHeight: '90vh',
-          backgroundColor: '#e0e0e0',
+          backgroundColor: '#e6f7f5',
         }}
       >
         <Box

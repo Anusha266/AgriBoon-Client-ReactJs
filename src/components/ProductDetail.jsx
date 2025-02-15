@@ -1,10 +1,3 @@
-
-
-
-
-
-
-
 import React, { useState, useEffect } from "react";
 import {
   Box,
@@ -16,31 +9,21 @@ import {
   Divider,
   Grid,
   CircularProgress,
+  Snackbar,
+  Alert,
 } from "@mui/material";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import TopNavbar from "./topNavbar";
 
 const ProductDetail = () => {
-  const [data, setData] = useState(null); // State for product data
-  const [loading, setLoading] = useState(true); // State for loading
-  const [error, setError] = useState(null); // State for error handling
-  const [currentUser, setCurrentUser] = useState(null); // State for current user
-  const [isSignedIn, setIsSignedIn] = useState(false);
-  const [menuAnchor, setMenuAnchor] = useState(null);
-  const { id } = useParams(); // Get product ID from route parameters
-
-  const handleMenuOpen = (event) => {
-    setMenuAnchor(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setMenuAnchor(null);
-  };
-
-  const handleSignInSignOut = () => {
-    setIsSignedIn((prev) => !prev);
-  };
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false); // State for Snackbar visibility
+  const [currentUser, setCurrentUser] = useState(null);
+  const { id } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCurrentUser = async () => {
@@ -48,13 +31,9 @@ const ProductDetail = () => {
         const token = localStorage.getItem("token");
         const url = `${import.meta.env.VITE_NODEJS_BACKEND_ROOT}${import.meta.env.VITE_GET_CURRENT_USER}`;
         const response = await axios.get(url, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+          headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
         });
-        console.log("current user is::",response.data)
-        setCurrentUser(response?.data?.data); // Save current user info
+        setCurrentUser(response?.data?.data);
       } catch (err) {
         console.error("Failed to fetch current user:", err);
       }
@@ -68,17 +47,16 @@ const ProductDetail = () => {
       try {
         const URL = `${import.meta.env.VITE_NODEJS_BACKEND_ROOT}${import.meta.env.VITE_GET_PRODUCT_BY_ID}${id}`;
         const response = await axios.get(URL, {
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
         });
 
-        setData(response.data.data[0]); // Update state with API data
-        setError(null); // Clear error state on success
+        setData(response.data.data[0]);
+        setError(null);
       } catch (err) {
-        setError("Failed to load product details. Please try again."); // Set error message
+        setError("Failed to load product details. Please try again.");
+        setSnackbarOpen(true); // Show snackbar if error occurs
       } finally {
-        setLoading(false); // Stop loading indicator
+        setLoading(false);
       }
     };
 
@@ -87,115 +65,50 @@ const ProductDetail = () => {
 
   const handleBuyNow = async () => {
     try {
-        const URL = `${import.meta.env.VITE_NODEJS_BACKEND_ROOT}${import.meta.env.VITE_UPDATE_PRODUCT_BY_ID}${data._id}`; // Using product ID in the URL
-        console.log(URL)
-        const token=localStorage.getItem('token')
-        const resp = await axios.patch(
-          URL,
-          {
-            status: "pending", // Passing the status in the body
-          },
-          {
-            headers: {
-              "Content-Type": "application/json", // Ensuring correct content type
-              'Authorization':`Bearer ${token}`
-            },
-          }
-        );
-        console.log("response in handleBuynow",resp)
+      const URL = `${import.meta.env.VITE_NODEJS_BACKEND_ROOT}${import.meta.env.VITE_UPDATE_PRODUCT_BY_ID}${data._id}`;
+      const token = localStorage.getItem("token");
+      await axios.patch(URL, { status: "pending" }, { headers: { Authorization: `Bearer ${token}` } });
 
-        //storing data in transaction model
-        
-        const transResp = await axios.post(
-          `${import.meta.env.VITE_NODEJS_BACKEND_ROOT}${import.meta.env.VITE_CREATE_TRANSACTION}`,
-          {
+      await axios.post(
+        `${import.meta.env.VITE_NODEJS_BACKEND_ROOT}${import.meta.env.VITE_CREATE_TRANSACTION}`,
+        { role: "seller", user: data.owner_details._id, product: data._id },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-            role:'seller' ,
-            user:data.owner_details._id,
-            product:data._id
-
-          },
-          {
-            headers: {
-              "Content-Type": "application/json", // Ensuring correct content type
-              'Authorization':`Bearer ${token}`
-            },
-          }
-        );
-        console.log("response while creating transaction:",transResp.data)
-
-        
-        
-    
-      } catch (e) {
-        console.error("Error while creating transaction data:", e); // Handle error
-      }
+      navigate("/transactions");
+    } catch (e) {
+      console.error("Error while creating transaction:", e);
+      setError("Unable to buy product. Please try again!");
+      setSnackbarOpen(true); // Show snackbar for error
+    }
   };
-  
 
-  const handleCart=async()=>{
-    try{
-      const URL=`${import.meta.env.VITE_NODEJS_BACKEND_ROOT}${import.meta.env.VITE_UPDATE_PRODUCT_BY_ID}${data._id}`
-      const resp = await axios.patch(URL,
-        {
-            cart:true
-        },
-        {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      console.log("While upating product status to cart",resp.data)
+  const handleCart = async () => {
+    try {
+      const URL = `${import.meta.env.VITE_NODEJS_BACKEND_ROOT}${import.meta.env.VITE_UPDATE_PRODUCT_BY_ID}${data._id}`;
+      await axios.patch(URL, { cart: true }, { headers: { "Content-Type": "application/json" } });
+
+      console.log("Product added to cart successfully.");
+    } catch (e) {
+      console.error("Error updating product cart status:", e);
+      setError("Failed to add to cart. Please try again!");
+      setSnackbarOpen(true); // Show snackbar for error
     }
-    catch(e){
-      console.log("Error updating product cart status",e)
-    }
-  }
+  };
 
   if (loading) {
     return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-        }}
-      >
+      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
         <CircularProgress />
-      </Box>
-    );
-  }
-
-  if (error) {
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-        }}
-      >
-        <Typography color="error" variant="h6">
-          {error}
-        </Typography>
       </Box>
     );
   }
 
   if (!data) {
     return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-        }}
-      >
-        <Typography variant="h6">No product data available</Typography>
-      </Box>
+      <Typography variant="h6" sx={{ textAlign: "center", marginTop: 4 }}>
+        No product data available
+      </Typography>
     );
   }
 
@@ -203,47 +116,33 @@ const ProductDetail = () => {
 
   return (
     <>
-      <TopNavbar
-        isSignedIn={isSignedIn}
-        handleMenuOpen={handleMenuOpen}
-        menuAnchor={menuAnchor}
-        handleMenuClose={handleMenuClose}
-        handleSignInSignOut={handleSignInSignOut}
-      />
+      <TopNavbar />
       <Box
         sx={{
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
           height: "90vh",
-          backgroundColor: "#f4f4f4",
+          backgroundColor: "#e6f7f5",
           padding: 2,
         }}
       >
-        <Card
-          sx={{
-            maxWidth: 500,
-            width: "100%",
-            boxShadow: 3,
-            borderRadius: 2,
-          }}
-        >
+        <Card sx={{ maxWidth: 500, width: "100%", boxShadow: 3, borderRadius: 2 }}>
           <CardMedia
             component="img"
             image={data?.image || ""}
             alt={data?.name || "Product Image"}
-            sx={{
-              height: 300,
-              objectFit: "cover",
-              borderTopLeftRadius: "8px",
-              borderTopRightRadius: "8px",
-            }}
+            sx={{ height: 300, objectFit: "cover", borderTopLeftRadius: "8px", borderTopRightRadius: "8px" }}
           />
           <CardContent>
-            <Typography variant="h5" fontWeight="bold" gutterBottom>
-              {data?.name || "N/A"}
-            </Typography>
-            {/* Rest of the details */}
+            <Box>
+              <Typography variant="h6">Product Details</Typography>
+              <Typography variant="body2"><strong>Product Name:</strong> {data?.name || "N/A"}</Typography>
+              <Typography variant="body2"><strong>Quality:</strong> {data?.quality || "N/A"}</Typography>
+              <Typography variant="body2"><strong>Min Price:</strong> {data?.max_price || "N/A"}</Typography>
+              <Typography variant="body2"><strong>Max Price:</strong> {data?.min_price || "N/A"}</Typography>
+              <Typography variant="body2"><strong>Uploaded On:</strong> {data?.uploaded_on || "N/A"}</Typography>
+            </Box>
           </CardContent>
           <Divider />
           <Grid container spacing={2} sx={{ p: 2 }}>
@@ -254,7 +153,7 @@ const ProductDetail = () => {
                 fullWidth
                 sx={{ textTransform: "none" }}
                 onClick={handleCart}
-                disabled={isOwner || (data?.cart)} // Disable if user is owner
+                disabled={isOwner || data?.cart}
               >
                 Add to Cart
               </Button>
@@ -266,7 +165,7 @@ const ProductDetail = () => {
                 fullWidth
                 onClick={handleBuyNow}
                 sx={{ textTransform: "none" }}
-                disabled={isOwner} // Disable if user is owner
+                disabled={isOwner}
               >
                 Buy Now
               </Button>
@@ -274,21 +173,20 @@ const ProductDetail = () => {
           </Grid>
         </Card>
       </Box>
+
+      {/* Snackbar for Error Messages */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={4000}
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <Alert onClose={() => setSnackbarOpen(false)} severity="error" sx={{ width: "100%" }}>
+          {error}
+        </Alert>
+      </Snackbar>
     </>
   );
 };
 
 export default ProductDetail;
-
-
-
-
-
-
-
-
-
-
-
-
-

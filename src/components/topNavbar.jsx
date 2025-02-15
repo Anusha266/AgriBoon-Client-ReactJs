@@ -15,9 +15,13 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import HomeIcon from "@mui/icons-material/Home";
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { GlobalStateContext } from "./GlobalState";
 
-const TopNavbar = ({ isSignedIn, handleMenuOpen, menuAnchor, handleMenuClose, handleSignInSignOut }) => {
+const TopNavbar = () => {
   const navigate = useNavigate();
+  const { handleMenuOpen, handleMenuClose, handleLogout, menuAnchor } = useContext(GlobalStateContext);
+  
 
   // Function to navigate to the home page
   const handleHomeClick = () => {
@@ -26,13 +30,14 @@ const TopNavbar = ({ isSignedIn, handleMenuOpen, menuAnchor, handleMenuClose, ha
 
   return (
     <AppBar
-      position="static"
+      position="fixed"
       sx={{
-        background: "linear-gradient(90deg, rgb(107, 114, 104) 0%, rgb(127, 129, 127) 100%)",
+        background: "black",
         borderBottom: "2px solid #ffffff",
       }}
     >
-      <Toolbar sx={{ justifyContent: "space-between", alignItems: "center" }}>
+      
+      <Toolbar sx={{ justifyContent: "space-between", alignItems: "center"}}>
         {/* Left Side - Menu Icon and Home Icon */}
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <IconButton
@@ -47,11 +52,11 @@ const TopNavbar = ({ isSignedIn, handleMenuOpen, menuAnchor, handleMenuClose, ha
 
           
           {/* Menu */}
-        <Menu anchorEl={menuAnchor} open={Boolean(menuAnchor)} onClose={handleMenuClose}>
+        <Menu  anchorEl={menuAnchor} open={Boolean(menuAnchor)} onClose={handleMenuClose}>
           <Box sx={{ px: 2, py: 1, textAlign: "center" }}>
             <Avatar sx={{ margin: "0 auto", mb: 1 }} />
             <Typography variant="body1" gutterBottom>
-              Welcome, {isSignedIn ? "User" : "Guest"}
+              Welcome, User
             </Typography>
             <Divider />
             <MenuItem onClick={()=>{navigate('/')}}>Home</MenuItem>
@@ -63,8 +68,8 @@ const TopNavbar = ({ isSignedIn, handleMenuOpen, menuAnchor, handleMenuClose, ha
             <MenuItem onClick={handleMenuClose}>Payment Bills</MenuItem>
             <MenuItem onClick={handleMenuClose}>My Reviews</MenuItem>
             <Divider />
-            <MenuItem onClick={handleSignInSignOut}>
-              {isSignedIn ? "Logout" : "Login"}
+            <MenuItem onClick={handleLogout}>
+              Logout
             </MenuItem>
           </Box>
         </Menu>
@@ -84,7 +89,7 @@ const TopNavbar = ({ isSignedIn, handleMenuOpen, menuAnchor, handleMenuClose, ha
         <Typography
           variant="h4"
           sx={{
-            color: "black",
+            color: "white",
             fontWeight: "bold",
             fontFamily: "'Poppins', sans-serif",
           }}

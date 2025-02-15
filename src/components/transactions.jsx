@@ -28,7 +28,6 @@ const TransactionPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const [isSignedIn, setIsSignedIn] = useState(false);
   const [menuAnchor, setMenuAnchor] = useState(null);
   const navigate=useNavigate();
 
@@ -235,13 +234,7 @@ const TransactionPage = () => {
 
   return (
     <>
-      <TopNavbar
-        isSignedIn={isSignedIn}
-        handleMenuOpen={handleMenuOpen}
-        menuAnchor={menuAnchor}
-        handleMenuClose={handleMenuClose}
-        handleSignInSignOut={handleSignInSignOut}
-      />
+      <TopNavbar/>
       <Box
         sx={{
           display: 'flex',

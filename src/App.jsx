@@ -16,10 +16,12 @@ import Cart from './components/cart';
 import PrivateRoute from './components/privateRoute'
 import ProfileSetup from './components/profile';
 import ProfileDisplay from './components/profileDisplay';
+import { GlobalStateProvider } from './components/GlobalState';
 
 function App() {
   return (
     <Router>
+      <GlobalStateProvider>
       <Routes>
         {/* Public Routes */}
         <Route path="/signup" element={<Signup />} />
@@ -131,6 +133,7 @@ function App() {
           }
         />
       </Routes>
+      </GlobalStateProvider>
     </Router>
   );
 }
