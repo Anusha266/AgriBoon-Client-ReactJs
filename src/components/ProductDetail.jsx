@@ -117,6 +117,8 @@ const ProductDetail = () => {
   return (
     <>
       <TopNavbar />
+      <Box sx={{ height: "50px" }} />
+      
       <Box
         sx={{
           display: "flex",
@@ -139,8 +141,8 @@ const ProductDetail = () => {
               <Typography variant="h6">Product Details</Typography>
               <Typography variant="body2"><strong>Product Name:</strong> {data?.name || "N/A"}</Typography>
               <Typography variant="body2"><strong>Quality:</strong> {data?.quality || "N/A"}</Typography>
-              <Typography variant="body2"><strong>Min Price:</strong> {data?.max_price || "N/A"}</Typography>
-              <Typography variant="body2"><strong>Max Price:</strong> {data?.min_price || "N/A"}</Typography>
+              <Typography variant="body2"><strong>Min Price:</strong> {Math.round(data?.max_price) || "N/A"}</Typography>
+              <Typography variant="body2"><strong>Max Price:</strong> {Math.round(data?.min_price) || "N/A"}</Typography>
               <Typography variant="body2"><strong>Uploaded On:</strong> {data?.uploaded_on || "N/A"}</Typography>
             </Box>
           </CardContent>

@@ -171,6 +171,8 @@ const UploadProductPage = () => {
   return (
     <>
         <TopNavbar/>
+            <Box sx={{ height: "50px" }} />
+        
       <Box
         sx={{
           display: 'flex',
@@ -257,8 +259,8 @@ const UploadProductPage = () => {
               <Typography variant="h6">Product Details</Typography>
               <Typography variant="body2"><strong>Product Name:</strong> {fetchedProductDetails.name}</Typography>
               <Typography variant="body2"><strong>Quality:</strong> {fetchedProductDetails.quality}</Typography>
-              <Typography variant="body2"><strong>Min Price:</strong> {fetchedProductDetails.min_price}</Typography>
-              <Typography variant="body2"><strong>Max Price:</strong> {fetchedProductDetails.max_price}</Typography>
+              <Typography variant="body2"><strong>Min Price:</strong> {Math.round(fetchedProductDetails.min_price)}</Typography>
+              <Typography variant="body2"><strong>Max Price:</strong> {Math.round(fetchedProductDetails.max_price)}</Typography>
               <Typography variant="body2"><strong>Uploaded On:</strong> {fetchedProductDetails.uploaded_on}</Typography>
             </Box>
           )}

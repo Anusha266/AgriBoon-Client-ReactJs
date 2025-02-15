@@ -307,7 +307,7 @@ const TransactionPage = () => {
             <Grid container spacing={3}>
               {Array.isArray(cardData) ? (cardData.map((card) => (
                 card?.product?
-                (<Grid item xs={12} sm={6} md={2} key={card._id}>
+                (<Grid item xs={12} sm={6} md={3} key={card._id}>
                   <Card
                     sx={{
                       position: 'relative',
@@ -327,7 +327,7 @@ const TransactionPage = () => {
                     <CardContent>
                       <Typography variant="h6">{card?.product?.name || "No product"}</Typography>
                       <Typography color="textSecondary">{`Quality: ${card?.product?.quality}` || "No quality"}</Typography>
-                      <Typography color="textSecondary">{`Price: $${card?.product?.min_price || 0}) - $${card?.product?.max_price || 0}`}</Typography>
+                      <Typography color="textSecondary">{`Price: $${Math.round(card?.product?.min_price) || 0} - $${Math.round(card?.product?.max_price) || 0}`}</Typography>
                     </CardContent>
                     <Box
                       className="card-overlay"

@@ -7,38 +7,42 @@ import {
   Typography,
   CircularProgress,
   Snackbar,
+  AppBar,
+  Toolbar,
+  IconButton,
   SnackbarContent,
   Alert
 } from '@mui/material';
-import { CheckCircle, HourglassEmpty } from '@mui/icons-material';
+import { CheckCircle, HourglassEmpty, ArrowBack } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
+import TopNavbar from './topNavbar';
 
 const SellerAcceptedPage = () => {
-  const location = useLocation(); // React Router hook for getting state passed from another component
-  const transactionDetails = location.state; // Transaction details passed from previous page
+  const location = useLocation();
+  const transactionDetails = location.state;
+  const navigate = useNavigate();
 
   const [isCompleted, setIsCompleted] = useState(transactionDetails?.isCompleted || false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [otp, setOtp] = useState(''); // State to store the OTP
+  const [otp, setOtp] = useState('');
   const [otpGenerated, setOtpGenerated] = useState(false);
   const [isOTPActive, setIsOTPActive] = useState(transactionDetails?.isOTP_active || false);
-  const [otpSent, setOtpSent] = useState(false); // State to track if OTP is sent
+  const [otpSent, setOtpSent] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarSeverity, setSnackbarSeverity] = useState('error'); // "success" or "error"
-
-  const navigate = useNavigate(); // React Router hook to navigate programmatically
+  const [snackbarSeverity, setSnackbarSeverity] = useState('error');
 
   useEffect(() => {
     if (!transactionDetails) {
-      setError('Transaction details are not found.');
+      setSnackbarMessage('Transaction details not found.');
+      setSnackbarSeverity('error');
+      setOpenSnackbar(true);
     }
   }, [transactionDetails]);
 
   const generateOTP = () => {
-    const otp = Math.floor(1000 + Math.random() * 9000); // Generate a 6-digit random OTP
+    const otp = Math.floor(1000 + Math.random() * 9000);
     setOtp(otp);
     setOtpGenerated(true);
     return otp;
@@ -50,24 +54,21 @@ const SellerAcceptedPage = () => {
       const generatedOtp = generateOTP();
       console.log('Generated OTP:', generatedOtp);
 
-      // Send OTP to backend
       const response = await axios.patch(
         `${import.meta.env.VITE_NODEJS_BACKEND_ROOT}${import.meta.env.VITE_UPDATE_TRANSACTION}${transactionDetails._id}`,
         { sellerOTP: generatedOtp }
       );
       console.log('OTP sent to backend:', response.data);
 
-      // Update state to reflect successful OTP send
       setOtpSent(true);
       setSnackbarMessage('OTP sent successfully!');
       setSnackbarSeverity('success');
-      setOpenSnackbar(true);
     } catch (err) {
-      console.error('Error sending OTP to backend:', err);
+      console.error('Error sending OTP:', err);
       setSnackbarMessage('Failed to send OTP.');
       setSnackbarSeverity('error');
-      setOpenSnackbar(true);
     } finally {
+      setOpenSnackbar(true);
       setLoading(false);
     }
   };
@@ -78,26 +79,22 @@ const SellerAcceptedPage = () => {
       const response = await axios.get(
         `${import.meta.env.VITE_NODEJS_BACKEND_ROOT}${import.meta.env.VITE_GET_TRANSACTION_BY_ID}${transactionDetails._id}`
       );
-      console.log('Payment status response:', response.data);
 
       if (response?.data?.data?.isCompleted) {
         setIsCompleted(true);
         setSnackbarMessage('Payment completed successfully!');
         setSnackbarSeverity('success');
-      
       } else {
         setIsCompleted(false);
         setSnackbarMessage('Payment not completed yet.');
         setSnackbarSeverity('error');
-
       }
-      setOpenSnackbar(true);
     } catch (err) {
       console.error('Error checking payment status:', err);
       setSnackbarMessage('Error checking payment status.');
       setSnackbarSeverity('error');
-      setOpenSnackbar(true);
     } finally {
+      setOpenSnackbar(true);
       setLoading(false);
     }
   };
@@ -108,7 +105,6 @@ const SellerAcceptedPage = () => {
       const response = await axios.get(
         `${import.meta.env.VITE_NODEJS_BACKEND_ROOT}${import.meta.env.VITE_GET_TRANSACTION_BY_ID}${transactionDetails._id}`
       );
-      console.log('OTP status response:', response.data);
 
       if (response?.data?.data?.isOTP_active) {
         setIsOTPActive(true);
@@ -118,118 +114,113 @@ const SellerAcceptedPage = () => {
         setSnackbarMessage('Buyer has not moved to OTP stage yet.');
         setSnackbarSeverity('error');
       }
-      setOpenSnackbar(true);
     } catch (err) {
       console.error('Error checking OTP status:', err);
       setSnackbarMessage('Error checking OTP status.');
       setSnackbarSeverity('error');
-      setOpenSnackbar(true);
     } finally {
+      setOpenSnackbar(true);
       setLoading(false);
     }
   };
 
-  const handleBack = () => {
-    navigate('/'); // Navigate back to home or desired page
-  };
-
   return (
-    <Box sx={{ padding: 3 }}>
-      <Card sx={{ maxWidth: 400, margin: 'auto', padding: 2 }}>
-        <CardContent>
-          <Typography variant="h5" align="center" gutterBottom>
-            Seller Accepted Page
-          </Typography>
+    <Box sx={{ backgroundColor: '#e6f7f5', minHeight: '100vh' }}>
+      
+      <TopNavbar/>
+      <Box sx={{ height: "40px" }} />
 
-          {loading ? (
-            <CircularProgress />
-          ) : (
-            <>
-              {isCompleted ? (
-                <Box sx={{ textAlign: 'center' }}>
-                  <CheckCircle color="success" sx={{ fontSize: 60 }} />
-                  <Typography variant="h6" sx={{ marginTop: 2 }}>
-                    Payment Completed Successfully!
-                  </Typography>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    sx={{ marginTop: 2 }}
-                    onClick={handleBack}
-                  >
-                    OK
-                  </Button>
-                </Box>
-              ) : (
-                <>
-                  {isOTPActive ? (
-                    <Box sx={{ textAlign: 'center' }}>
-                      <Typography variant="h6" sx={{ marginTop: 2 }}>
-                        OTP is active. Proceed with payment status check.
-                      </Typography>
+      {/* ✅ MAIN CARD */}
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '90vh' }}>
+        <Card sx={{ maxWidth: 450, width: '100%', padding: 3, textAlign: 'center', boxShadow: 5 }}>
+          <CardContent>
+            <Typography variant="h5" gutterBottom>
+              Transaction Status
+            </Typography>
 
-                      {otpGenerated && (
-                        <Typography variant="body1" sx={{ marginTop: 2 }}>
-                          Generated OTP: <strong>{otp}</strong>
+            {loading ? (
+              <CircularProgress />
+            ) : (
+              <>
+                {isCompleted ? (
+                  <Box>
+                    <CheckCircle color="success" sx={{ fontSize: 80 }} />
+                    <Typography variant="h6" sx={{ marginTop: 2 }}>
+                      Payment Completed Successfully!
+                    </Typography>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      sx={{ marginTop: 2 }}
+                      onClick={() => navigate('/')}
+                    >
+                      OK
+                    </Button>
+                  </Box>
+                ) : (
+                  <>
+                    {isOTPActive ? (
+                      <Box>
+                        <Typography variant="h6" sx={{ marginBottom: 2 }}>
+                          OTP is active. Proceed with payment status check.
                         </Typography>
-                      )}
 
-                      {otpSent && (
+                        {otpGenerated && (
+                          <Typography variant="body1" sx={{ fontWeight: 'bold', marginBottom: 2 }}>
+                            Generated OTP: {otp}
+                          </Typography>
+                        )}
+
+                        {otpSent && (
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            sx={{ margin: 1 }}
+                            onClick={checkPaymentStatus}
+                          >
+                            Check Payment Status
+                          </Button>
+                        )}
+
+                        <Button
+                          variant="contained"
+                          color="secondary"
+                          sx={{ margin: 1 }}
+                          onClick={sendOTPToBackend}
+                          disabled={otpSent}
+                        >
+                          Generate OTP
+                        </Button>
+                      </Box>
+                    ) : (
+                      <Box>
+                        <HourglassEmpty sx={{ fontSize: 80 }} />
+                        <Typography variant="h6" sx={{ marginTop: 2 }}>
+                          Waiting for Payment...
+                        </Typography>
                         <Button
                           variant="contained"
                           color="primary"
                           sx={{ marginTop: 2 }}
-                          onClick={checkPaymentStatus}
+                          onClick={checkOTPStatus}
                         >
-                          Check Payment Status
+                          Check OTP Status
                         </Button>
-                      )}
+                      </Box>
+                    )}
+                  </>
+                )}
+              </>
+            )}
+          </CardContent>
+        </Card>
+      </Box>
 
-                      <Button
-                        variant="contained"
-                        color="secondary"
-                        sx={{ marginTop: 2 }}
-                        onClick={sendOTPToBackend}
-                        disabled={otpSent} // Disable once OTP is sent
-                      >
-                        Generate OTP
-                      </Button>
-                    </Box>
-                  ) : (
-                    <Box sx={{ textAlign: 'center' }}>
-                      <HourglassEmpty sx={{ fontSize: 60 }} />
-                      <Typography variant="h6" sx={{ marginTop: 2 }}>
-                        Waiting for Payment to be Completed...
-                      </Typography>
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        sx={{ marginTop: 2 }}
-                        onClick={checkOTPStatus}
-                      >
-                        Check OTP Status
-                      </Button>
-                    </Box>
-                  )}
-                </>
-              )}
-            </>
-          )}
-        </CardContent>
-      </Card>
-
-      <Snackbar
-        open={openSnackbar}
-        autoHideDuration={3000}
-        onClose={() => setOpenSnackbar(false)}
-      >
-        <SnackbarContent
-          message={snackbarMessage}
-          sx={{
-            backgroundColor: snackbarSeverity === 'error' ? 'red' : 'green',
-            color: 'white',
-          }}
-        />
+      {/* ✅ SNACKBAR ALERTS */}
+      <Snackbar open={openSnackbar} autoHideDuration={3000} onClose={() => setOpenSnackbar(false)}>
+        <Alert severity={snackbarSeverity} onClose={() => setOpenSnackbar(false)}>
+          {snackbarMessage}
+        </Alert>
       </Snackbar>
     </Box>
   );

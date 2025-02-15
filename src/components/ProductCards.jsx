@@ -74,7 +74,7 @@ const ProductCards = ({ products }) => {
 
               {/* Product Price Range */}
               <Typography variant="body2" color="text.secondary" sx={{ marginBottom: 2 }}>
-                Price: ₹{product.min_price} - ₹{product.max_price}
+                Price: ₹{Math.round(product.min_price)} - ₹{Math.round(product.max_price)}
               </Typography>
 
               {/* View Button */}
